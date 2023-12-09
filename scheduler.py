@@ -46,8 +46,9 @@ def get_user_response():
             if response != "":
                 try:
                     task_length = int(response)
+                    assert task_length > 0
                 except:
-                    print("Please enter a valid integer duration for your task, or leave it blank for the default 60 minutes.")
+                    print("Please enter a valid integer duration greater than 0 for your task, or leave it blank for the default 60 minutes.")
                     continue
             else:
                 task_length = 60
@@ -55,8 +56,10 @@ def get_user_response():
             if response != "":
                 try:
                     task_importance = int(response)
+                    assert task_importance >= 1
+                    assert task_importance <= 100
                 except:
-                    print("Please enter a valid integer importance of your task, or leave it blank for the default 50 utils.")
+                    print("Please enter a valid integer between 1-100 indicating the importance of your task, or leave it blank for the default 50 utils.")
                     continue
             else:
                 task_importance = 50
@@ -65,7 +68,7 @@ def get_user_response():
                 try:
                     task_deadline = int(response)
                 except:
-                    print("Please enter a valid integer for days until your task is due, or leave it blank.")
+                    print("Please enter an integer greather than -1 for days until your task is due, or leave it blank.")
                     continue
             else:
                 task_deadline = -1
