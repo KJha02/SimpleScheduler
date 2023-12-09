@@ -28,4 +28,4 @@ To remove a task from your to-do list, run the code below and follow the corresp
 python scheduler.py --removeTask
 ```
 
-Both commands will add or remove the task you specify and then display the tasks you should complete next on your to-do list.
+Both commands will add or remove the task you specify and then display the tasks you should complete next on your to-do list, according to the viewing option specified.
