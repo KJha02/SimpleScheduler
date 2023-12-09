@@ -1,5 +1,5 @@
 # SimpleScheduler
-Simple code to order tasks on your to-do lists based on shortest-duration time, weighed by importance and time until due date
+Simple code to order tasks on your to-do lists based on shortest-duration time, weighed by importance and time until the due date. Adapted from the chapter in Algorithms to Live By on scheduling.
 
 To view the tasks you should most immediately do, run the code below
 
