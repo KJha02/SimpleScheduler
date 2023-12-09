@@ -68,10 +68,10 @@ def get_user_response():
                 try:
                     task_deadline = int(response)
                 except:
-                    print("Please enter an integer greather than -1 for days until your task is due, or leave it blank.")
+                    print("Please enter an integer indicating days until your task is due, or leave it blank.")
                     continue
             else:
-                task_deadline = -1
+                task_deadline = None
 
         question_id += 1
     return task_name, task_length, task_importance, task_deadline
@@ -119,7 +119,7 @@ def get_due_date(days_from_now, df):
     # Today's date
     today = datetime.today()
 
-    if days_from_now == -1:  # if deadline is unspecified
+    if days_from_now is None:  # if deadline is unspecified
         df['date_due'] = pd.to_datetime(df['date_due'])
         latest_date = df['date_due'].max()
         if latest_date != np.nan:  # if the dataframe isn't empty, return the latest date + 1
