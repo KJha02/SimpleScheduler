@@ -6,7 +6,7 @@ Simple code to order tasks on your to-do lists based on shortest-duration time, 
 To view the tasks you should most immediately do, run the code below
 
 ```
-python scheduler.py --getSchedule
+python scheduler.py
 ```
 
 To view all tasks on your list sorted by the order you should complete them, run the code below and follow the corresponding prompts

@@ -10,11 +10,10 @@ def get_args_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--addTask', action='store_true')
-    parser.add_argument('--removeTask', dest='addTask', action='store_false')
-    parser.set_defaults(addTask=True)
+    parser.set_defaults(addTask=False)
 
-    parser.add_argument('--getSchedule', action='store_true')
-    parser.set_defaults(getSchedule=False)
+    parser.add_argument('--removeTask', action='store_true')
+    parser.set_defaults(removeTask=False)
 
     parser.add_argument('--viewTasks', action='store_true')
     parser.set_defaults(viewTasks=False)
@@ -23,7 +22,7 @@ def get_args_parser():
 
 def get_user_response():
     question_list = [
-        f"\nWhat is the name of your task? ",
+        f"\nWhat is the name of the task you would like to add to your to-do list? ",
         f"(Optional) How long do you think this will this take you (in minutes)? ",
         f"(Optional) How important is this task to you on a scale of 1-100? ",
         f"(Optional) In how many days is this task due? ",
@@ -75,7 +74,7 @@ def get_user_response():
     return task_name, task_length, task_importance, task_deadline
 
 def remove_user_task(df):
-    task_name = input("Which task would you like to remove from your schedule? ")
+    task_name = input("\nWhich task would you like to remove from your to-do list? ")
 
     # Select rows with the value "Alice" in the 'name' column
     mask = df['task_name'] == task_name
@@ -183,18 +182,18 @@ def main(args):
 
     df = load_or_create_dataframe()
     
-    if not args.getSchedule and not args.viewTasks:
-        if args.addTask:  # adding a task
+    if args.addTask:  # adding a task
 
-            task_name, task_length, task_importance, task_deadline = get_user_response()
+        task_name, task_length, task_importance, task_deadline = get_user_response()
 
-            due_date = get_due_date(task_deadline, df)
+        due_date = get_due_date(task_deadline, df)
 
-            new_entry = {"task_name": task_name, "task_length": task_length, "importance": task_importance, "date_due": due_date}
-            
-            df = update_task_list(df, new_entry)
-        else:
-            df = remove_user_task(df)
+        new_entry = {"task_name": task_name, "task_length": task_length, "importance": task_importance, "date_due": due_date}
+        
+        df = update_task_list(df, new_entry)
+    
+    if args.removeTask:  # removing a task
+        df = remove_user_task(df)
     
     if len(df) == 0:
         print("Schedule is clear! Add a task using the --addTask argument.")
