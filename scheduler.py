@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 import numpy as np
-import time
+import mlx.core as mx
 from datetime import datetime, timedelta
 import warnings
 import pdb
@@ -148,23 +148,31 @@ def update_task_list(df, entry):
     return df
 
 def prioritize_tasks(df):
-    task_utilities = set()
-
     df['date_due'] = pd.to_datetime(df['date_due'])
 
     today = datetime.today()
-    for index, row in df.iterrows():
-        delta_date_due = (row['date_due'] - today)
-        delta_date_due = delta_date_due.days
 
-        # importance should exponentially grow by due date
-        task_utility = (np.exp(-delta_date_due) * row['importance']) / row['task_length'] 
+    delta_due_dates = [due_date - today for due_date in df['date_due']]  # mlx doesn't seem to support datetimes yet
 
-        time_in_hours = round(row['task_length'] / 60, 2)  # used for printing
+    delta_due_dates = mx.array([d.days for d in delta_due_dates])
+    importances = mx.array(df['importance'].tolist())
+    task_lengths = mx.array(df['task_length'].tolist())
 
-        task_utilities.add((row['task_name'], task_utility, time_in_hours))
+    # much faster than previous for loop implementation
+    task_utility = mx.divide(mx.multiply(mx.exp(-delta_due_dates), importances), task_lengths)
+    time_in_hours = mx.divide(task_lengths, 60)
+
+    sorted_utility_indices = mx.argsort(-task_utility)  # sort highest util to lowest
     
-    return sorted(task_utilities, key=lambda x: x[1], reverse=True)  # sort by utility from highest to lowest
+    res = list(
+        zip(
+            df['task_name'].iloc[sorted_utility_indices.tolist()],  # get reordered task name
+            task_utility[sorted_utility_indices],  # get reordered task utility
+            time_in_hours[sorted_utility_indices]  # get reordered task duration
+        )
+    )
+
+    return res
 
 def print_results(task_set, num_tasks=None):
     if num_tasks is None:
@@ -173,7 +181,7 @@ def print_results(task_set, num_tasks=None):
     print(f"\nHere is the next set of tasks you should do in order:\n")
     for i in range(num_tasks):
         task_name, utility, time_in_hours = task_set[i]
-        print(f"{i+1}. {task_name} - Estimated Time (in hours) = {time_in_hours}")
+        print(f"{i+1}. {task_name} - Estimated Time (in hours) = {time_in_hours.item():0.2f}")
     print(f"\n")
 
 
