@@ -168,7 +168,8 @@ def prioritize_tasks(df):
         zip(
             df['task_name'].iloc[sorted_utility_indices.tolist()],  # get reordered task name
             task_utility[sorted_utility_indices],  # get reordered task utility
-            time_in_hours[sorted_utility_indices]  # get reordered task duration
+            time_in_hours[sorted_utility_indices],  # get reordered task duration
+            delta_due_dates[sorted_utility_indices]  # when is the task due
         )
     )
 
@@ -180,8 +181,8 @@ def print_results(task_set, num_tasks=None):
         
     print(f"\nHere is the next set of tasks you should do in order:\n")
     for i in range(num_tasks):
-        task_name, utility, time_in_hours = task_set[i]
-        print(f"{i+1}. {task_name} - Estimated Time (in hours) = {time_in_hours.item():0.2f}")
+        task_name, utility, time_in_hours, days_until_due = task_set[i]
+        print(f"{i+1}. {task_name} ; Estimated Time (in hours) = {time_in_hours.item():0.2f} ; Days Unitl Due = {days_until_due.item()}")
     print(f"\n")
 
 
@@ -194,13 +195,9 @@ def main(args):
     df = load_or_create_dataframe()
     
     if args.addTask:  # adding a task
-
         task_name, task_length, task_importance, task_deadline = get_user_response()
-
         due_date = get_due_date(task_deadline, df)
-
         new_entry = {"task_name": task_name, "task_length": task_length, "importance": task_importance, "date_due": due_date}
-        
         df = update_task_list(df, new_entry)
     
     if args.removeTask:  # removing a task
